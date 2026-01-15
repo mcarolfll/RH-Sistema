@@ -1,15 +1,22 @@
 {
   "candidatos": [
     {
-
+      "id": ,
+      "nome": "",
+      "email": "",
+      "telefone": "",
+      "cargo_desejado": "",
+      "status": ""
     },
-    {
 
-    }
-  ],
   "empresas": [
     {
-
+      "id": ,
+      "nome": "",
+      "cnpj": "",
+      "email": "",
+      "telefone": "",
+      "vagas_disponiveis": 0
     }
   ]
 }
