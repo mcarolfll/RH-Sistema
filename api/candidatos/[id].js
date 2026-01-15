@@ -31,13 +31,16 @@ function parseBody(req) {
     });
 }
 
-function getIdFromUrl(url) {
-    const parts = url.split('?')[0].split('/');
+function getId(req) {
+    if (req.query && req.query.id) {
+        return req.query.id;
+    }
+    const parts = req.url.split('?')[0].split('/');
     return parts[parts.length - 1];
 }
 
 module.exports = async (req, res) => {
-    const id = getIdFromUrl(req.url);
+    const id = getId(req);
 
     if (!id) {
         sendJson(res, 400, { error: 'ID do candidato não informado.' });
@@ -99,4 +102,3 @@ module.exports = async (req, res) => {
 
     sendJson(res, 405, { error: 'Método não permitido.' });
 };
-
