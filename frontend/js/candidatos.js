@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const alertBox = document.getElementById('alertBox');
     const btnSubmit = document.getElementById('btnSubmit');
     const inputId = document.getElementById('candidatoId');
+    const STORAGE_KEY = storage.keys.CANDIDATOS;
 
     // Carregar candidatos ao iniciar
     loadCandidatos();
@@ -22,28 +23,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (id) {
-                await api.put(`/candidatos/${id}`, candidato);
+                updateCandidato(Number(id), candidato);
                 showAlert('Candidato atualizado com sucesso!', 'success');
             } else {
-                await api.post('/candidatos', candidato);
+                saveCandidato(candidato);
                 showAlert('Candidato cadastrado com sucesso!', 'success');
             }
-            
+
             resetForm();
-            loadCandidatos();
+            renderCandidatos();
         } catch (error) {
-            showAlert(error.message, 'error');
+            showAlert('Erro ao salvar candidato.', 'error');
         }
     });
 
-    async function loadCandidatos() {
-        try {
-            listaContainer.innerHTML = '<p style="text-align:center; padding: 20px;">Carregando...</p>';
-            const candidatos = await api.get('/candidatos');
-            renderList(candidatos);
-        } catch (error) {
-            listaContainer.innerHTML = '<p style="text-align:center; color: var(--danger-color);">Erro ao carregar candidatos.</p>';
-        }
+    function buscarCandidatos() {
+        return storage.getAll(STORAGE_KEY);
+    }
+
+    function saveCandidato(candidato) {
+        storage.create(STORAGE_KEY, candidato);
+    }
+
+    function updateCandidato(id, candidato) {
+        storage.update(STORAGE_KEY, id, candidato);
+    }
+
+    function deleteCandidatoStorage(id) {
+        storage.remove(STORAGE_KEY, id);
+    }
+
+    function loadCandidatos() {
+        renderCandidatos();
     }
 
     function renderList(candidatos) {
@@ -71,6 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
+    function renderCandidatos() {
+        const candidatos = buscarCandidatos();
+        renderList(candidatos);
+    }
+
     window.editCandidato = (id, nome, email, telefone, cargo) => {
         inputId.value = id;
         document.getElementById('nome').value = nome;
@@ -82,21 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    window.deleteCandidato = async (id) => {
+    window.deleteCandidato = (id) => {
         if (confirm('Tem certeza que deseja excluir este candidato?')) {
             try {
-                // Remove visualmente primeiro para feedback instantâneo
-                const item = document.querySelector(`button[onclick="deleteCandidato(${id})"]`).closest('.list-item');
-                if (item) item.style.opacity = '0.5';
-
-                await api.delete(`/candidatos/${id}`);
+                deleteCandidatoStorage(id);
                 showAlert('Candidato excluído com sucesso!', 'success');
-                
-                // Recarrega a lista para garantir sincronia
-                await loadCandidatos();
+                renderCandidatos();
             } catch (error) {
-                showAlert(error.message, 'error');
-                if (item) item.style.opacity = '1';
+                showAlert('Erro ao excluir candidato.', 'error');
             }
         }
     };

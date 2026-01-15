@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const alertBox = document.getElementById('alertBox');
     const btnSubmit = document.getElementById('btnSubmit');
     const inputId = document.getElementById('empresaId');
+    const STORAGE_KEY = storage.keys.EMPRESAS;
 
     // Carregar empresas ao iniciar
     loadEmpresas();
@@ -22,28 +23,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (id) {
-                await api.put(`/empresas/${id}`, empresa);
+                updateEmpresa(Number(id), empresa);
                 showAlert('Empresa atualizada com sucesso!', 'success');
             } else {
-                await api.post('/empresas', empresa);
+                saveEmpresa(empresa);
                 showAlert('Empresa cadastrada com sucesso!', 'success');
             }
-            
+
             resetForm();
-            loadEmpresas();
+            renderEmpresas();
         } catch (error) {
-            showAlert(error.message, 'error');
+            showAlert('Erro ao salvar empresa.', 'error');
         }
     });
 
-    async function loadEmpresas() {
-        try {
-            listaContainer.innerHTML = '<p style="text-align:center; padding: 20px;">Carregando...</p>';
-            const empresas = await api.get('/empresas');
-            renderList(empresas);
-        } catch (error) {
-            listaContainer.innerHTML = '<p style="text-align:center; color: var(--danger-color);">Erro ao carregar empresas.</p>';
-        }
+    function buscarEmpresas() {
+        return storage.getAll(STORAGE_KEY);
+    }
+
+    function saveEmpresa(empresa) {
+        storage.create(STORAGE_KEY, empresa);
+    }
+
+    function updateEmpresa(id, empresa) {
+        storage.update(STORAGE_KEY, id, empresa);
+    }
+
+    function deleteEmpresaStorage(id) {
+        storage.remove(STORAGE_KEY, id);
+    }
+
+    function loadEmpresas() {
+        renderEmpresas();
     }
 
     function renderList(empresas) {
@@ -71,6 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
+    function renderEmpresas() {
+        const empresas = buscarEmpresas();
+        renderList(empresas);
+    }
+
     window.editEmpresa = (id, nome, cnpj, email, telefone) => {
         inputId.value = id;
         document.getElementById('nome').value = nome;
@@ -82,21 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    window.deleteEmpresa = async (id) => {
+    window.deleteEmpresa = (id) => {
         if (confirm('Tem certeza que deseja excluir esta empresa?')) {
             try {
-                // Remove visualmente primeiro para feedback instantâneo
-                const item = document.querySelector(`button[onclick="deleteEmpresa(${id})"]`).closest('.list-item');
-                if (item) item.style.opacity = '0.5';
-
-                await api.delete(`/empresas/${id}`);
+                deleteEmpresaStorage(id);
                 showAlert('Empresa excluída com sucesso!', 'success');
-                
-                // Recarrega a lista para garantir sincronia
-                await loadEmpresas();
+                renderEmpresas();
             } catch (error) {
-                showAlert(error.message, 'error');
-                if (item) item.style.opacity = '1';
+                showAlert('Erro ao excluir empresa.', 'error');
             }
         }
     };

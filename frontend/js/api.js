@@ -24,7 +24,6 @@ const api = {
 
     async post(endpoint, data) {
         try {
-            console.log(`[POST] ${API_URL}${endpoint}`, data);
             const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: {
@@ -33,14 +32,10 @@ const api = {
                 body: JSON.stringify(data)
             });
             const result = await response.json();
-            if (!response.ok) throw new Error(result.error || 'Erro ao salvar: ' + response.statusText);
+            if (!response.ok) throw new Error(result.error || 'Erro ao salvar');
             return result;
         } catch (error) {
             console.error('API Error:', error);
-            // Se for erro de rede (fetch falhou)
-            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                throw new Error('Não foi possível conectar ao servidor. Verifique se a janela preta (backend) está aberta.');
-            }
             throw error;
         }
     },
@@ -69,13 +64,7 @@ const api = {
                 method: 'DELETE'
             });
             const result = await response.json();
-            if (!response.ok) {
-                // Se já não existir no servidor (404), tratamos como "já excluído"
-                if (response.status === 404) {
-                    return result;
-                }
-                throw new Error(result.error || 'Erro ao excluir');
-            }
+            if (!response.ok) throw new Error(result.error || 'Erro ao excluir');
             return result;
         } catch (error) {
             console.error('API Error:', error);
