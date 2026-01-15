@@ -1,29 +1,29 @@
 {
   "candidatos": [
     {
-      "id": 1768501088073,
-      "nome": "dhggdgh",
-      "email": "gptcompartilhado649@gmail.com",
-      "telefone": "(81) 99734-0204",
-      "cargo_desejado": "wrtgrwqgt",
-      "status": "Em análise"
+      "id": ,
+      "nome": "",
+      "email": "",
+      "telefone": "",
+      "cargo_desejado": "",
+      "status": ""
     },
     {
-      "id": 1768501172589,
-      "nome": "fcw",
-      "email": "guilhermejrf08@gmail.com",
-      "telefone": "(81) 99734-0204",
-      "cargo_desejado": "wgf",
-      "status": "Em análise"
+      "id": ,
+      "nome": "",
+      "email": "",
+      "telefone": "",
+      "cargo_desejado": "",
+      "status": ""
     }
   ],
   "empresas": [
     {
-      "id": 1768501081426,
-      "nome": "sags",
-      "cnpj": "4444444444444",
-      "email": "mariacarolinafrancodelimaleite@gmail.com",
-      "telefone": "1323145445",
+      "id":,
+      "nome": "",
+      "cnpj": "",
+      "email": "",
+      "telefone": "",
       "vagas_disponiveis": 0
     }
   ]
